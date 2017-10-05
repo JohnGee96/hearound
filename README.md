@@ -5,6 +5,6 @@
 
     master - production level code 
       | 
-     dev - collection of tested features\
+     dev - collection of tested features
       |
       feature/<feature-name> - singular feature that usually takes a week to implement
