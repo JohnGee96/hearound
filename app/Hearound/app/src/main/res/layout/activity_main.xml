@@ -14,4 +14,15 @@
         mapbox:mapbox_styleUrl="mapbox://styles/mapbox/streets-v10"
         mapbox:mapbox_cameraZoom="11" />
 
+    <!-- https://github.com/mapbox/mapbox-gl-native/issues/3365-->
+    <!-- Implementation of find my location button -->
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/myLocationButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="20dp"
+        android:src="@android:drawable/ic_menu_mylocation" />
+
 </RelativeLayout>
