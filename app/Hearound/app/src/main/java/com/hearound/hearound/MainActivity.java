@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     DEFAULT_GPS_MIN_TIME,
                     DEFAULT_GPS_MIN_DISTANCE,
                     locListener);
+            mapboxMap.setMyLocationEnabled(true);
         }
     }
 

@@ -4,6 +4,11 @@ package com.hearound.hearound;
  * Created by Maxwell on 10/23/17.
  */
 
+/*
+ * From Ming's SimpleGeoExample
+ * https://github.com/tuftsdev/MobileDev/blob/gh-pages/examples/SimpleGeoApp/app/src/main/java/edu/tufts/cs/mchow/simplegeoapp/MyLocationListener.java
+ */
+
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
