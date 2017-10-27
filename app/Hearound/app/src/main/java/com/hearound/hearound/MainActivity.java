@@ -1,6 +1,7 @@
 package com.hearound.hearound;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -58,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapView.getMapAsync(this);
         // Add button click listener
         userLocationFAB();
+        newPostFAB();
     }
 
 
@@ -66,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         MainActivity.this.mapboxMap = mapboxMap;
         Log.d("****** onMapReady *****", "map: " + mapboxMap);
         mapboxMap.setMyLocationEnabled(true);
+        displayPost(new LatLng(42.407095, -71.117974), "Tufts University", "Tufts");
     }
 
     @Override
@@ -75,10 +79,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 && grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             // Yay!  Now you can do request for location updates
-            locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    DEFAULT_GPS_MIN_TIME,
-                    DEFAULT_GPS_MIN_DISTANCE,
-                    locListener);
+            try {
+                locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        DEFAULT_GPS_MIN_TIME,
+                        DEFAULT_GPS_MIN_DISTANCE,
+                        locListener);
+            } catch (SecurityException e) {
+                Log.e("Security exception","request location updates: " + e);
+            }
             mapboxMap.setMyLocationEnabled(true);
         }
     }
@@ -97,6 +105,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         });
+    }
+
+    private void newPostFAB() {
+        FloatingActionButton compose = (FloatingActionButton) findViewById(R.id.composeButton);
+        compose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(v.getContext(), NewPost.class);
+                startActivityForResult(myIntent, 0);
+            }
+        });
+    }
+
+    // Add a post to the map
+    private void displayPost(LatLng loc, String user, String body) {
+        mapboxMap.addMarker(new MarkerViewOptions().position(loc).title(user).snippet(body));
     }
 
     @Override
