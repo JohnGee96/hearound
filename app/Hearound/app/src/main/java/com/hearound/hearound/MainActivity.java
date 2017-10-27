@@ -62,23 +62,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         userLocationFAB();
         newPostFAB();
 
-        Intent postValues = getIntent();
 
-        if (postValues.hasExtra("userID") && postValues.hasExtra("postBody") &&
-                postValues.hasExtra("latitude") && postValues.hasExtra("longitude")) {
-            String userID = postValues.getStringExtra("userID");
-            String postBody = postValues.getStringExtra("postBody");
-            double latitude = getIntent().getDoubleExtra("latitude", 0);
-            double longitude = getIntent().getDoubleExtra("longitude", 0);
-            Log.d("******** intent values", userID);
-            Log.d("******** intent values", postBody);
-            Log.d("******** intent values", "" + latitude);
-            Log.d("******** intent values", "" + longitude);
-
-            //displayPost(new LatLng(latitude, longitude), userID, postBody);
-        } else {
-            Log.d("******** intent values", "Not all intent values present");
-        }
     }
 
 
@@ -88,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Log.d("****** onMapReady *****", "map: " + mapboxMap);
         mapboxMap.setMyLocationEnabled(true);
         displayPost(new LatLng(42.407095, -71.117974), "Tufts University", "Tufts");
+
+        createPostFromIntent();
     }
 
     @Override
@@ -136,9 +122,33 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
+    private void createPostFromIntent() {
+        Intent postValues = getIntent();
+
+        if (postValues.hasExtra("userID") && postValues.hasExtra("postBody") &&
+                postValues.hasExtra("latitude") && postValues.hasExtra("longitude")) {
+            String userID = postValues.getStringExtra("userID");
+            String postBody = postValues.getStringExtra("postBody");
+            double latitude = getIntent().getDoubleExtra("latitude", 0);
+            double longitude = getIntent().getDoubleExtra("longitude", 0);
+            Log.d("******** intent values", userID);
+            Log.d("******** intent values", postBody);
+            Log.d("******** intent values", "" + latitude);
+            Log.d("******** intent values", "" + longitude);
+
+            displayPost(new LatLng(latitude, longitude), userID, postBody);
+        } else {
+            Log.d("******** intent values", "Not all intent values present");
+        }
+    }
+
     // Add a post to the map
     private void displayPost(LatLng loc, String user, String body) {
-        mapboxMap.addMarker(new MarkerViewOptions().position(loc).title(user).snippet(body));
+        try {
+            mapboxMap.addMarker(new MarkerViewOptions().position(loc).title(user).snippet(body));
+        } catch (Exception e) {
+            Log.e("******* displayPost", "error adding marker - " + e);
+        }
     }
 
     @Override
