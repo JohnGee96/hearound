@@ -46,45 +46,35 @@
         android:layout_width="113dp"
         android:layout_height="30dp"
         android:text="Location"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        tools:layout_editor_absoluteX="64dp"
-        tools:layout_editor_absoluteY="151dp" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Lat: "
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        tools:layout_editor_absoluteX="64dp"
-        tools:layout_editor_absoluteY="189dp" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
     <EditText
         android:id="@+id/latitude"
         android:layout_width="165dp"
         android:layout_height="45dp"
         android:ems="10"
-        android:inputType="numberSigned|numberDecimal"
-        tools:layout_editor_absoluteX="64dp"
-        tools:layout_editor_absoluteY="211dp" />
+        android:inputType="numberDecimal" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Long: "
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        tools:layout_editor_absoluteX="64dp"
-        tools:layout_editor_absoluteY="256dp" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
     <EditText
         android:id="@+id/longitude"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="numberSigned|numberDecimal"
-        tools:layout_editor_absoluteX="64dp"
-        tools:layout_editor_absoluteY="278dp" />
+        android:inputType="numberDecimal" />
 
     <Button
         android:id="@+id/submitButton"

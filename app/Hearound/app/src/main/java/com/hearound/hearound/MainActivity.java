@@ -61,6 +61,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Add button click listener
         userLocationFAB();
         newPostFAB();
+
+        /*Intent postValues = getIntent();
+        Log.d("********", "" + postValues);
+
+        if (postValues != null) {
+            String userID = postValues.getStringExtra("userID");
+            String postBody = postValues.getStringExtra("postBody");
+
+            Log.d("********", userID);
+            Log.d("********", postBody);
+            double latitude = Double.parseDouble(getIntent().getStringExtra("EXTRA_LATITUDE"));
+            double longitude = Double.parseDouble(getIntent().getStringExtra("EXTRA_LONGITUDE"));
+            //displayPost(new LatLng(42.4070, -71.117), userID, postBody);
+        }
+        */
     }
 
 
@@ -112,8 +127,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         compose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myIntent = new Intent(v.getContext(), NewPost.class);
-                startActivityForResult(myIntent, 0);
+                Intent intent = new Intent(v.getContext(), NewPost.class);
+                startActivity(intent);
             }
         });
     }
