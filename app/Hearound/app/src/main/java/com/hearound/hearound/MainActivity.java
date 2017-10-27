@@ -62,20 +62,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         userLocationFAB();
         newPostFAB();
 
-        /*Intent postValues = getIntent();
-        Log.d("********", "" + postValues);
+        Intent postValues = getIntent();
 
-        if (postValues != null) {
+        if (postValues.hasExtra("userID") && postValues.hasExtra("postBody") &&
+                postValues.hasExtra("latitude") && postValues.hasExtra("longitude")) {
             String userID = postValues.getStringExtra("userID");
             String postBody = postValues.getStringExtra("postBody");
+            double latitude = getIntent().getDoubleExtra("latitude", 0);
+            double longitude = getIntent().getDoubleExtra("longitude", 0);
+            Log.d("******** intent values", userID);
+            Log.d("******** intent values", postBody);
+            Log.d("******** intent values", "" + latitude);
+            Log.d("******** intent values", "" + longitude);
 
-            Log.d("********", userID);
-            Log.d("********", postBody);
-            double latitude = Double.parseDouble(getIntent().getStringExtra("EXTRA_LATITUDE"));
-            double longitude = Double.parseDouble(getIntent().getStringExtra("EXTRA_LONGITUDE"));
-            //displayPost(new LatLng(42.4070, -71.117), userID, postBody);
+            //displayPost(new LatLng(latitude, longitude), userID, postBody);
+        } else {
+            Log.d("******** intent values", "Not all intent values present");
         }
-        */
     }
 
 

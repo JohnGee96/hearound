@@ -60,7 +60,7 @@
         android:layout_width="165dp"
         android:layout_height="45dp"
         android:ems="10"
-        android:inputType="numberDecimal" />
+        android:inputType="numberSigned|numberDecimal" />
 
     <TextView
         android:id="@+id/textView4"
@@ -74,7 +74,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="numberDecimal" />
+        android:inputType="numberSigned|numberDecimal" />
 
     <Button
         android:id="@+id/submitButton"
