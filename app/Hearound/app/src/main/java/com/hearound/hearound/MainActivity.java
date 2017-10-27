@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), NewPost.class);
-                startActivity(intent);
+                startActivity(intent); 
             }
         });
     }
