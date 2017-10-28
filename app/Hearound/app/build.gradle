@@ -27,6 +27,7 @@ dependencies {
     compile('com.mapbox.mapboxsdk:mapbox-android-sdk:5.1.4@aar') {
         transitive = true
     }
+    compile 'com.squareup.okhttp3:okhttp:3.9.0'
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'

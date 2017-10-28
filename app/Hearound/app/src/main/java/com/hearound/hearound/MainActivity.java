@@ -20,6 +20,15 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
     // Constants
     private final int DEFAULT_GPS_MIN_TIME = 1; // in milliseconds
@@ -30,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private MapboxMap mapboxMap;
     private LocationManager locManager;
     private MyLocationListener locListener;
+    OkHttpClient client = new OkHttpClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +68,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Needed so onMapReady gets called
         mapView.getMapAsync(this);
-        // Add button click listener
+
+        // Add button click listeners
         userLocationFAB();
         newPostFAB();
-
-
     }
 
 
@@ -71,7 +80,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         MainActivity.this.mapboxMap = mapboxMap;
         Log.d("****** onMapReady *****", "map: " + mapboxMap);
         mapboxMap.setMyLocationEnabled(true);
-        displayPost(new LatLng(42.407095, -71.117974), "Tufts University", "Tufts");
+
+        addNearbyPosts();
 
         createPostFromIntent();
     }
@@ -82,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (requestCode == MY_PERMISSIONS_ACCESS_FINE_LOCATION
                 && grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // Yay!  Now you can do request for location updates
+
             try {
                 locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                         DEFAULT_GPS_MIN_TIME,
@@ -117,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), NewPost.class);
-                startActivity(intent); 
+                startActivity(intent);
             }
         });
     }
@@ -142,6 +152,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    private void addNearbyPosts() {
+        // TODO: url needs to be set
+        JSONObject allPosts = new JSONObject(run(url));
+
+        JSONArray keys = allPosts.names();
+
+        for(int i = 0; i < keys.length(); i++) {
+            try {
+                JSONObject postData = allPosts.getJSONObject(keys.optString(i));
+                LatLng loc = new LatLng(postData.getDouble("lat"), postData.getDouble("long"));
+
+                // TODO: These keys might need to be changed
+                displayPost(loc, postData.getString("user"), postData.getString("contents"));
+            } catch (Exception e) {
+                Log.e("******** addNearbyPosts", "error getting data " + e);
+            }
+        }
+    }
+
     // Add a post to the map
     private void displayPost(LatLng loc, String user, String body) {
         try {
@@ -149,6 +178,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         } catch (Exception e) {
             Log.e("******* displayPost", "error adding marker - " + e);
         }
+    }
+
+    // From http://square.github.io/okhttp/
+    // Executes a get request
+    String run(String url) throws IOException {
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        Response response = client.newCall(request).execute();
+        return response.body().string();
     }
 
     @Override
