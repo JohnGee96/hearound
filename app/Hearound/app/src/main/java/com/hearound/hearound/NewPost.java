@@ -21,6 +21,8 @@ import okhttp3.Response;
 public class NewPost extends AppCompatActivity {
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    // TODO: set url
+    private final String API_URL = "api";
     OkHttpClient client = new OkHttpClient();
 
     @Override
@@ -33,8 +35,11 @@ public class NewPost extends AppCompatActivity {
             public void onClick(View view) {
                 String json = getJSONBody();
 
-                // TODO: url needs to be set
-                post(url, json);
+                try {
+                    post(API_URL + "/posts", json);
+                } catch (Exception e) {
+                    Log.e("******* submit form", "error with POST: " + e);
+                }
 
                 Intent intent = new Intent(view.getContext(), MainActivity.class);
                 startActivity(intent);
@@ -46,17 +51,16 @@ public class NewPost extends AppCompatActivity {
     String getJSONBody() {
         JSONObject json = new JSONObject();
 
-        EditText userField = (EditText)findViewById(R.id.userID);
+        EditText titleField = (EditText)findViewById(R.id.title);
         EditText postField = (EditText)findViewById(R.id.postBody);
         EditText latField = (EditText)findViewById(R.id.latitude);
-        EditText longField = (EditText)findViewById(R.id.longitude);
+        EditText lngField = (EditText)findViewById(R.id.longitude);
 
         try {
-            // TODO: these fields might need to be renamed
-            json.put("userID", userField.getText().toString());
-            json.put("postBody", postField.getText().toString());
-            json.put("latitude", latField.getText().toString());
-            json.put("longitude", longField.getText().toString());
+            json.put("title", titleField.getText().toString());
+            json.put("body", postField.getText().toString());
+            json.put("lat", latField.getText().toString());
+            json.put("lng", lngField.getText().toString());
         } catch (Exception e) {
             Log.d("****** exception", "empty text box" + e);
         }

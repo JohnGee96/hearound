@@ -3,7 +3,6 @@ package com.hearound.hearound;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -33,6 +32,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     // Constants
     private final int DEFAULT_GPS_MIN_TIME = 1; // in milliseconds
     private final int DEFAULT_GPS_MIN_DISTANCE = 1; // in meters
+    // TODO: set url
+    private final String API_URL = "api";
 
     private static final int MY_PERMISSIONS_ACCESS_FINE_LOCATION = 0;
     private MapView mapView;
@@ -82,8 +83,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapboxMap.setMyLocationEnabled(true);
 
         addNearbyPosts();
-
-        createPostFromIntent();
     }
 
     @Override
@@ -132,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
+    /* Not using this right now
     private void createPostFromIntent() {
         Intent postValues = getIntent();
 
@@ -151,23 +151,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Log.d("******** intent values", "Not all intent values present");
         }
     }
+    */
 
     private void addNearbyPosts() {
-        // TODO: url needs to be set
-        JSONObject allPosts = new JSONObject(run(url));
+        JSONArray allPosts = new JSONArray();
+        try {
+            JSONObject data = new JSONObject(run(API_URL + "/posts"));
+            allPosts = data.getJSONArray("objects");
+        } catch (Exception e) {
+            Log.e("******* addNearbyPosts", "Exception with GET" + e);
+        }
 
-        JSONArray keys = allPosts.names();
+        try {
+            for(int i = 0; i < allPosts.length(); i++) {
+                JSONObject postData = allPosts.getJSONObject(i);
+                LatLng loc = new LatLng(postData.getDouble("lat"), postData.getDouble("lng"));
 
-        for(int i = 0; i < keys.length(); i++) {
-            try {
-                JSONObject postData = allPosts.getJSONObject(keys.optString(i));
-                LatLng loc = new LatLng(postData.getDouble("lat"), postData.getDouble("long"));
-
-                // TODO: These keys might need to be changed
-                displayPost(loc, postData.getString("user"), postData.getString("contents"));
-            } catch (Exception e) {
-                Log.e("******** addNearbyPosts", "error getting data " + e);
+                displayPost(loc, postData.getString("title"), postData.getString("body"));
             }
+        } catch (Exception e) {
+            Log.e("******** addNearbyPosts", "error parsing data " + e);
         }
     }
 

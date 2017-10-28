@@ -12,7 +12,7 @@
         android:id="@+id/textView"
         android:layout_width="142dp"
         android:layout_height="30dp"
-        android:text="Username"
+        android:text="Title"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         tools:layout_editor_absoluteX="64dp"
         tools:layout_editor_absoluteY="57dp" />
