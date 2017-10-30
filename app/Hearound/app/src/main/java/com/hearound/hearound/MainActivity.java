@@ -152,7 +152,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void addNearbyPosts() {
         APIConnection api = new APIConnection();
-        JSONArray allPosts = new JSONArray();
 
         try {
             //API_URL + "/posts"
@@ -164,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Log.e("**** doGetRequest ****", error);
+                            Log.e("**** get ****", error);
                     }
                 });
                 }

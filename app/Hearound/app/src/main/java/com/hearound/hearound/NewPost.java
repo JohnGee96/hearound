@@ -8,10 +8,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.mapbox.mapboxsdk.geometry.LatLng;
+
 import org.json.JSONObject;
 
 import java.io.IOException;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -36,7 +40,27 @@ public class NewPost extends AppCompatActivity {
                 String json = getJSONBody();
 
                 try {
-                    post(API_URL + "/posts", json);
+                    APIConnection api = new APIConnection();
+                    //API_URL + "/posts"
+                    api.post(" http://validate.jsontest.com/", json, new Callback() {
+                        @Override
+                        public void onFailure(final Call call, IOException e) {
+                            final String error = e.toString();
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.e("**** post ****", error);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onResponse(Call call, final Response response) throws IOException {
+                            // Don't need to do anything with the response at this point
+                            return;
+                        }
+                    });
                 } catch (Exception e) {
                     Log.e("**** onClick ****", "error with POST: " + e);
                 }
@@ -67,14 +91,5 @@ public class NewPost extends AppCompatActivity {
         }
 
         return json.toString();
-    }
-
-    // From http://square.github.io/okhttp/
-    // Executes a post request
-    String post(String url, String json) throws IOException {
-        RequestBody body = RequestBody.create(JSON, json);
-        Request request = new Request.Builder().url(url).post(body).build();
-        Response response = client.newCall(request).execute();
-        return response.body().string();
     }
 }
