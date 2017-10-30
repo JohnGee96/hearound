@@ -2,6 +2,8 @@ package com.hearound.hearound;
 
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.StreamCorruptedException;
 
@@ -21,8 +23,8 @@ public class APIConnection {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private final OkHttpClient client = new OkHttpClient();
 
-    public void post(String url, String json, Callback callback) throws Exception {
-        RequestBody body = RequestBody.create(JSON, json);
+    public void post(String url, JSONObject json, Callback callback) throws Exception {
+        RequestBody body = RequestBody.create(JSON, json.toString());
         Request request = new Request.Builder().url(url).post(body).build();
 
         client.newCall(request).enqueue(callback);

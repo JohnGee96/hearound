@@ -34,10 +34,13 @@ public class NewPost extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_post);
 
-        Button back = (Button) findViewById(R.id.submitButton);
-        back.setOnClickListener(new View.OnClickListener() {
+        Button submit = (Button) findViewById(R.id.submitButton);
+        submit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                String json = getJSONBody();
+                JSONObject json = getJSONBody();
+                if (json.length() == 0) {
+                    return;
+                }
 
                 try {
                     APIConnection api = new APIConnection();
@@ -70,9 +73,17 @@ public class NewPost extends AppCompatActivity {
             }
 
         });
+
+        Button cancel = (Button) findViewById(R.id.cancelButton);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), MainActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
-    String getJSONBody() {
+    JSONObject getJSONBody() {
         JSONObject json = new JSONObject();
 
         EditText titleField = (EditText)findViewById(R.id.title);
@@ -90,6 +101,6 @@ public class NewPost extends AppCompatActivity {
             Log.e("**** getJSONBody ****", "empty text box: " + e);
         }
 
-        return json.toString();
+        return json;
     }
 }
