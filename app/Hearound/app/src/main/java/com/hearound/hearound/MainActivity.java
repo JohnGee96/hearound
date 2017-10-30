@@ -24,8 +24,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -33,14 +33,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final int DEFAULT_GPS_MIN_TIME = 1; // in milliseconds
     private final int DEFAULT_GPS_MIN_DISTANCE = 1; // in meters
     // TODO: set url
-    private final String API_URL = "api";
+    private final String API_URL = "http://jsonplaceholder.typicode.com";
 
     private static final int MY_PERMISSIONS_ACCESS_FINE_LOCATION = 0;
     private MapView mapView;
     private MapboxMap mapboxMap;
     private LocationManager locManager;
     private MyLocationListener locListener;
-    OkHttpClient client = new OkHttpClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
-        Log.d("****** onCreate *****", "map: " + mapView);
 
         // Set up location detection
         locManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
@@ -79,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(MapboxMap mapboxMap) {
         MainActivity.this.mapboxMap = mapboxMap;
-        Log.d("****** onMapReady *****", "map: " + mapboxMap);
         mapboxMap.setMyLocationEnabled(true);
 
         addNearbyPosts();
@@ -98,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         DEFAULT_GPS_MIN_DISTANCE,
                         locListener);
             } catch (SecurityException e) {
-                Log.e("Security exception","request location updates: " + e);
+                Log.e("**** onPermissions ****","request location failed: " + e);
             }
             mapboxMap.setMyLocationEnabled(true);
         }
@@ -114,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mapboxMap.getMyLocation()), 15));
                 }
                 else {
-                    Log.d("****** FAB *****", "map: " + mapboxMap);
+                    Log.d("**** FAB ****", "map: " + mapboxMap);
                 }
             }
         });
@@ -154,15 +151,41 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     */
 
     private void addNearbyPosts() {
+        APIConnection api = new APIConnection();
         JSONArray allPosts = new JSONArray();
-        try {
-            JSONObject data = new JSONObject(run(API_URL + "/posts"));
-            allPosts = data.getJSONArray("objects");
-        } catch (Exception e) {
-            Log.e("******* addNearbyPosts", "Exception with GET" + e);
-        }
 
         try {
+            //API_URL + "/posts"
+            api.get("http://echo.jsontest.com/key/value/one/two", new Callback() {
+                @Override
+                public void onFailure(final Call call, IOException e) {
+                    final String error = e.toString();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.e("**** doGetRequest ****", error);
+                    }
+                });
+                }
+
+                @Override
+                public void onResponse(Call call, final Response response) throws IOException {
+                    String res = response.body().string();
+                    parseResponse(res);
+                    displayPost(new LatLng(40.720802, -74.001789), "getResponse", res);
+                }
+            });
+        } catch (IOException e) {
+            Log.e("**** addNearbyPosts ***", e.toString());
+        }
+    }
+
+    private void parseResponse(String res) {
+        try {
+            JSONObject data = new JSONObject(res);
+            JSONArray allPosts = data.getJSONArray("objects");
+
             for(int i = 0; i < allPosts.length(); i++) {
                 JSONObject postData = allPosts.getJSONObject(i);
                 LatLng loc = new LatLng(postData.getDouble("lat"), postData.getDouble("lng"));
@@ -170,8 +193,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 displayPost(loc, postData.getString("title"), postData.getString("body"));
             }
         } catch (Exception e) {
-            Log.e("******** addNearbyPosts", "error parsing data " + e);
+            Log.e("**** parseResponse ****", "error parsing response data: " + e);
         }
+
     }
 
     // Add a post to the map
@@ -179,19 +203,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         try {
             mapboxMap.addMarker(new MarkerViewOptions().position(loc).title(user).snippet(body));
         } catch (Exception e) {
-            Log.e("******* displayPost", "error adding marker - " + e);
+            Log.e("**** displayPost ****", "error adding marker: " + e);
         }
-    }
-
-    // From http://square.github.io/okhttp/
-    // Executes a get request
-    String run(String url) throws IOException {
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        Response response = client.newCall(request).execute();
-        return response.body().string();
     }
 
     @Override

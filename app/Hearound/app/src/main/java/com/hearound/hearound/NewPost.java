@@ -22,7 +22,7 @@ public class NewPost extends AppCompatActivity {
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     // TODO: set url
-    private final String API_URL = "api";
+    private final String API_URL = "http://18.221.100.128/api";
     OkHttpClient client = new OkHttpClient();
 
     @Override
@@ -38,7 +38,7 @@ public class NewPost extends AppCompatActivity {
                 try {
                     post(API_URL + "/posts", json);
                 } catch (Exception e) {
-                    Log.e("******* submit form", "error with POST: " + e);
+                    Log.e("**** onClick ****", "error with POST: " + e);
                 }
 
                 Intent intent = new Intent(view.getContext(), MainActivity.class);
@@ -62,7 +62,8 @@ public class NewPost extends AppCompatActivity {
             json.put("lat", latField.getText().toString());
             json.put("lng", lngField.getText().toString());
         } catch (Exception e) {
-            Log.d("****** exception", "empty text box" + e);
+            // TODO: add user dialogue
+            Log.e("**** getJSONBody ****", "empty text box: " + e);
         }
 
         return json.toString();
