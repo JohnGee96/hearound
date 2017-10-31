@@ -26,7 +26,7 @@ public class NewPost extends AppCompatActivity {
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     // TODO: set url
-    private final String API_URL = "http://18.221.100.128/api";
+    private final String API_URL = "http://18.216.21.133/api";
     OkHttpClient client = new OkHttpClient();
 
     @Override
@@ -45,9 +45,9 @@ public class NewPost extends AppCompatActivity {
                 try {
                     APIConnection api = new APIConnection();
                     //API_URL + "/posts"
-                    api.post(" http://validate.jsontest.com/", json, new Callback() {
+                    api.post(API_URL + "/posts", json, new Callback() {
                         @Override
-                        public void onFailure(final Call call, IOException e) {
+                        public void onFailure(Call call, IOException e) {
                             final String error = e.toString();
 
                             runOnUiThread(new Runnable() {
@@ -59,7 +59,7 @@ public class NewPost extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onResponse(Call call, final Response response) throws IOException {
+                        public void onResponse(Call call, Response response) throws IOException {
                             // Don't need to do anything with the response at this point
                             return;
                         }
@@ -101,6 +101,7 @@ public class NewPost extends AppCompatActivity {
             Log.e("**** getJSONBody ****", "empty text box: " + e);
         }
 
+        Log.d("$$$$$$$$$ ", json.toString());
         return json;
     }
 }

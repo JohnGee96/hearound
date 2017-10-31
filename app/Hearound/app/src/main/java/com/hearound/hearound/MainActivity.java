@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final int DEFAULT_GPS_MIN_TIME = 1; // in milliseconds
     private final int DEFAULT_GPS_MIN_DISTANCE = 1; // in meters
     // TODO: set url
-    private final String API_URL = "http://jsonplaceholder.typicode.com";
+    private final String API_URL = "http://18.216.21.133/api";
 
     private static final int MY_PERMISSIONS_ACCESS_FINE_LOCATION = 0;
     private MapView mapView;
@@ -155,9 +155,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         try {
             //API_URL + "/posts"
-            api.get("http://echo.jsontest.com/key/value/one/two", new Callback() {
+            api.get(API_URL + "/posts", new Callback() {
                 @Override
-                public void onFailure(final Call call, IOException e) {
+                public void onFailure(Call call, IOException e) {
                     final String error = e.toString();
 
                     runOnUiThread(new Runnable() {
@@ -169,10 +169,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
 
                 @Override
-                public void onResponse(Call call, final Response response) throws IOException {
+                public void onResponse(Call call, Response response) throws IOException {
                     String res = response.body().string();
                     parseResponse(res);
-                    displayPost(new LatLng(40.720802, -74.001789), "getResponse", res);
                 }
             });
         } catch (IOException e) {
