@@ -10,56 +10,56 @@ Example request:
 Example Response: 
 
     {
-    "num_results": 5, 
-    "objects": [
-        {
-        "body": "This is the geolocation of Boston", 
-        "created_at": "2017-10-30T23:51:21", 
-        "id": 1, 
-        "lat": 42.3639457, 
-        "lng": -71.0569078, 
-        "title": "Boston", 
-        "updated_at": "2017-10-30T23:54:12"
-        }, 
-        {
-        "body": "This is the geolocation of New York", 
-        "created_at": "2017-10-31T00:40:23", 
-        "id": 2, 
-        "lat": 40.7137746, 
-        "lng": -74.0060504, 
-        "title": "New York", 
-        "updated_at": "2017-10-31T00:49:39"
-        }, 
-        {
-        "body": "This is the geolocation of Los Angeles", 
-        "created_at": "2017-10-31T00:42:50", 
-        "id": 3, 
-        "lat": 34.055588, 
-        "lng": -118.2283376, 
-        "title": "Los Angeles", 
-        "updated_at": "2017-10-31T00:42:50"
-        }, 
-        {
-        "body": "This is the geolocation of London", 
-        "created_at": "2017-10-31T00:45:01", 
-        "id": 4, 
-        "lat": 51.5076913, 
-        "lng": -0.1288709, 
-        "title": "London", 
-        "updated_at": "2017-10-31T00:45:01"
-        }, 
-        {
-        "body": "This is the geolocation of Hillside", 
-        "created_at": "2017-10-31T00:47:00", 
-        "id": 5, 
-        "lat": 42.4088871, 
-        "lng": -71.1196583, 
-        "title": "Hillside Apartments", 
-        "updated_at": "2017-10-31T00:47:00"
-        }
-    ], 
-    "page": 1, 
-    "total_pages": 1
+        "num_results": 5, 
+        "objects": [
+            {
+                "body": "This is the geolocation of Boston", 
+                "created_at": "2017-10-30T23:51:21", 
+                "id": 1, 
+                "lat": 42.3639457, 
+                "lng": -71.0569078, 
+                "title": "Boston", 
+                "updated_at": "2017-10-30T23:54:12"
+            }, 
+            {
+                "body": "This is the geolocation of New York", 
+                "created_at": "2017-10-31T00:40:23", 
+                "id": 2, 
+                "lat": 40.7137746, 
+                "lng": -74.0060504, 
+                "title": "New York", 
+                "updated_at": "2017-10-31T00:49:39"
+            }, 
+            {
+                "body": "This is the geolocation of Los Angeles", 
+                "created_at": "2017-10-31T00:42:50", 
+                "id": 3, 
+                "lat": 34.055588, 
+                "lng": -118.2283376, 
+                "title": "Los Angeles", 
+                "updated_at": "2017-10-31T00:42:50"
+            }, 
+            {
+                "body": "This is the geolocation of London", 
+                "created_at": "2017-10-31T00:45:01", 
+                "id": 4, 
+                "lat": 51.5076913, 
+                "lng": -0.1288709, 
+                "title": "London", 
+                "updated_at": "2017-10-31T00:45:01"
+            }, 
+            {
+                "body": "This is the geolocation of Hillside", 
+                "created_at": "2017-10-31T00:47:00", 
+                "id": 5, 
+                "lat": 42.4088871, 
+                "lng": -71.1196583, 
+                "title": "Hillside Apartments", 
+                "updated_at": "2017-10-31T00:47:00"
+            }
+        ], 
+        "page": 1, 
+        "total_pages": 1
     }
 
 ### GET /api/posts/#
