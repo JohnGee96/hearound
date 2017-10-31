@@ -3,11 +3,13 @@ package com.hearound.hearound;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.view.View;
 
@@ -20,6 +22,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -33,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final int DEFAULT_GPS_MIN_TIME = 1; // in milliseconds
     private final int DEFAULT_GPS_MIN_DISTANCE = 1; // in meters
     // TODO: set url
-    private final String API_URL = "http://18.216.21.133/api";
+    private final String API_URL = "http://52.15.239.241/api";
 
     private static final int MY_PERMISSIONS_ACCESS_FINE_LOCATION = 0;
     private MapView mapView;
@@ -79,7 +82,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         MainActivity.this.mapboxMap = mapboxMap;
         mapboxMap.setMyLocationEnabled(true);
 
-        addNearbyPosts();
+        Location loc = mapboxMap.getMyLocation();
+        addNearbyPosts(loc.getLatitude(), loc.getLongitude(), 5);
     }
 
     @Override
@@ -128,34 +132,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    /* Not using this right now
-    private void createPostFromIntent() {
-        Intent postValues = getIntent();
-
-        if (postValues.hasExtra("userID") && postValues.hasExtra("postBody") &&
-                postValues.hasExtra("latitude") && postValues.hasExtra("longitude")) {
-            String userID = postValues.getStringExtra("userID");
-            String postBody = postValues.getStringExtra("postBody");
-            double latitude = getIntent().getDoubleExtra("latitude", 0);
-            double longitude = getIntent().getDoubleExtra("longitude", 0);
-            Log.d("******** intent values", userID);
-            Log.d("******** intent values", postBody);
-            Log.d("******** intent values", "" + latitude);
-            Log.d("******** intent values", "" + longitude);
-
-            displayPost(new LatLng(latitude, longitude), userID, postBody);
-        } else {
-            Log.d("******** intent values", "Not all intent values present");
-        }
-    }
-    */
-
-    private void addNearbyPosts() {
+    private void addNearbyPosts(double lat, double lng, int radius) {
         APIConnection api = new APIConnection();
 
         try {
-            //API_URL + "/posts"
-            api.get(API_URL + "/posts", new Callback() {
+            JSONObject params = new JSONObject();
+            params.put("lat", lat);
+            params.put("lng", lng);
+            params.put("radius", radius);
+
+            api.post(API_URL + "/nearby_posts", params, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     final String error = e.toString();
@@ -163,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Log.e("**** get ****", error);
+                            Log.e("**** post ****", error);
                     }
                 });
                 }
@@ -174,15 +160,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     parseResponse(res);
                 }
             });
-        } catch (IOException e) {
+        } catch (IOException e1) {
+            Log.e("**** addNearbyPosts ***", "Error with POST: " + e1);
+        } catch (JSONException e2) {
+            Log.e("**** addNearbyPosts ***", "Error making JSON" + e2);
+        } catch (Exception e) {
             Log.e("**** addNearbyPosts ***", e.toString());
         }
     }
 
     private void parseResponse(String res) {
         try {
-            JSONObject data = new JSONObject(res);
-            JSONArray allPosts = data.getJSONArray("objects");
+            JSONArray allPosts = new JSONArray(res);
 
             for(int i = 0; i < allPosts.length(); i++) {
                 JSONObject postData = allPosts.getJSONObject(i);

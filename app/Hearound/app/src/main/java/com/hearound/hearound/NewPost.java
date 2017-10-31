@@ -26,7 +26,7 @@ public class NewPost extends AppCompatActivity {
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     // TODO: set url
-    private final String API_URL = "http://18.216.21.133/api";
+    private final String API_URL = "http://52.15.239.241/api";
     OkHttpClient client = new OkHttpClient();
 
     @Override
@@ -44,7 +44,6 @@ public class NewPost extends AppCompatActivity {
 
                 try {
                     APIConnection api = new APIConnection();
-                    //API_URL + "/posts"
                     api.post(API_URL + "/posts", json, new Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) {
@@ -101,7 +100,6 @@ public class NewPost extends AppCompatActivity {
             Log.e("**** getJSONBody ****", "empty text box: " + e);
         }
 
-        Log.d("$$$$$$$$$ ", json.toString());
         return json;
     }
 }
