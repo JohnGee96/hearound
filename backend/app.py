@@ -40,3 +40,5 @@ def show_post(id):
 manager = flask_restless.APIManager(app, flask_sqlalchemy_db=db)
 manager.create_api(Post, methods=['GET','POST', 'PUT'])
 
+if __name__ == '__main__':
+      app.run(host='0.0.0.0', port=80)

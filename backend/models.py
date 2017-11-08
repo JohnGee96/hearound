@@ -1,5 +1,3 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 from app import db
 
@@ -24,14 +22,13 @@ class Post(db.Model):
 
     @property
     def serialize(self):
-       """Return object data in easily serializeable format"""
-       return {
-           'id'         : self.id,
-           'title'      : self.title,
-           'body'       : self.body,
-           'lat'        : self.lat,
-           'lng'        : self.lng,
-           'modified_at': dump_datetime(self.created_at),
-           'updated_at' : dump_datetime(self.updated_at)
-       }
+        return {
+            'id'         : self.id,
+            'title'      : self.title,
+            'body'       : self.body,
+            'lat'        : self.lat,
+            'lng'        : self.lng,
+            'modified_at': dump_datetime(self.created_at),
+            'updated_at' : dump_datetime(self.updated_at)
+        }
 
