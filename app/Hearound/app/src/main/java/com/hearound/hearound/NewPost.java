@@ -27,7 +27,6 @@ public class NewPost extends AppCompatActivity {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     // TODO: set url
     private final String API_URL = "http://52.15.239.241/api";
-    OkHttpClient client = new OkHttpClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
