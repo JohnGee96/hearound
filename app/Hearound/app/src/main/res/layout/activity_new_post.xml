@@ -19,6 +19,7 @@
 
     <EditText
         android:id="@+id/title"
+        android:hint="Post Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -35,8 +36,9 @@
 
     <EditText
         android:id="@+id/postBody"
+        android:hint="Post Body"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="0.90"
         android:ems="10"
         android:inputType="textMultiLine" />
@@ -57,6 +59,7 @@
 
     <EditText
         android:id="@+id/latitude"
+        android:hint="Latitude"
         android:layout_width="165dp"
         android:layout_height="45dp"
         android:ems="10"
@@ -71,24 +74,29 @@
 
     <EditText
         android:id="@+id/longitude"
+        android:hint="Longitude"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="numberSigned|numberDecimal" />
     <LinearLayout
+        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/submitButton"
-            android:layout_width="178dp"
-            android:layout_height="wrap_content"
-            android:text="Submit" />
 
         <Button
+            style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/cancelButton"
             android:layout_width="181dp"
             android:layout_height="wrap_content"
             android:text="Cancel" />
+
+        <Button
+            style="?android:attr/buttonBarButtonStyle"
+            android:id="@+id/submitButton"
+            android:layout_width="178dp"
+            android:layout_height="wrap_content"
+            android:text="Submit" />
     </LinearLayout>
 
 </LinearLayout>
