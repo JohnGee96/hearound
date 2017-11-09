@@ -32,3 +32,13 @@ class Post(db.Model):
             'updated_at' : dump_datetime(self.updated_at)
         }
 
+class User(db.Model):
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  
+    username = db.Column(db.String(20), nullable=False)  
+    email = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String(30), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(),
+                           onupdate=func.now())

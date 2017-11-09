@@ -37,8 +37,16 @@ def show_post(id):
     respJson = json.dumps({'title': post.title, 'body': post.body})
     return respJson
 
+def init_db():
+    db.init_app(app)
+    db.app = app
+    db.create_all()
+
 manager = flask_restless.APIManager(app, flask_sqlalchemy_db=db)
 manager.create_api(Post, methods=['GET','POST', 'PUT'])
+manager.create_api(User, methods=['GET','POST'])
 
 if __name__ == '__main__':
-      app.run(host='0.0.0.0', port=80)
+    app.init_db()
+    app.run(host='localhost', port=80)
+    # app.run(host='0.0.0.0', port=80)
