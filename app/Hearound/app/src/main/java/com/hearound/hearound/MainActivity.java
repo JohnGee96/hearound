@@ -2,11 +2,13 @@ package com.hearound.hearound;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -123,12 +125,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onMapReady(MapboxMap mapboxMap) {
+        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         MainActivity.this.mapboxMap = mapboxMap;
         mapboxMap.setMyLocationEnabled(true);
 
-        // Location loc = mapboxMap.getMyLocation();
-        // addNearbyPosts(loc.getLatitude(), loc.getLongitude(), 5);
-        addClusteredGeoJsonSource(mapboxMap);
+        if (true) { //prefs.getBoolean("enable_heatmap", false)) {
+            addClusteredGeoJsonSource(mapboxMap);
+
+        }
+        else {
+            Location loc = mapboxMap.getMyLocation();
+            addNearbyPosts(loc.getLatitude(), loc.getLongitude(), 5);//prefs.getInt("radius", 5));
+        }
     }
 
     @Override
@@ -244,22 +252,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void addClusteredGeoJsonSource(MapboxMap mapboxMap) {
 
         // Add a new source from our GeoJSON data and set the 'cluster' option to true.
-        //try {
+        try {
             mapboxMap.addSource(
                     // Point to GeoJSON data. This example visualizes all M1.0+ earthquakes from
                     // 12/22/15 to 1/21/16 as logged by USGS' Earthquake hazards program.
                     new GeoJsonSource("posts",
-                            "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"ature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-71.118,42.4064]},\"properties\":{\"prop0\":\"value0\"}},{\"type\":\"ature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-71.114007,42.404414]},\"properties\":{\"prop0\":\"value0\"}},{\"type\":\"ature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-71.115008,42.405413]},\"properties\":{\"prop0\":\"value0\"}},{\"type\":\"ature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-71.116007,42.406412]},\"properties\":{\"prop0\":\"value0\"}},{\"type\":\"ature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-71.117006,42.407413]},\"properties\":{\"prop0\":\"value0\"}},{\"type\":\"ature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-71.118008,42.408414]},\"properties\":{\"prop0\":\"value0\"}},{\"type\":\"ature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-71.119008,42.409412]},\"properties\":{\"prop0\":\"value0\"}},{\"type\":\"ature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-71.115006,42.403414]},\"properties\":{\"prop0\":\"value0\"}},{\"type\":\"ature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-71.114006,42.406412]},\"properties\":{\"prop0\":\"value0\"}}]}",
-                            //new URL("https://www.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson"),
+                            new URL(API_URL + "/"),
                             new GeoJsonOptions()
                                     .withCluster(true)
                                     .withClusterMaxZoom(15) // Max zoom to cluster points on
                                     .withClusterRadius(20) // Use small cluster radius for the hotspots look
                     )
             );
-        //} catch (MalformedURLException malformedUrlException) {
-        //    Log.e("**** CreateHotspots", "Check the URL " + malformedUrlException.getMessage());
-        //}
+        } catch (MalformedURLException malformedUrlException) {
+            Log.e("**** CreateHotspots", "Check the URL " + malformedUrlException.getMessage());
+        }
 
         // Use the earthquakes source to create four layers:
         // three for each cluster category, and one for unclustered points
