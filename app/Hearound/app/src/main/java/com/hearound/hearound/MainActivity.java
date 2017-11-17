@@ -3,13 +3,18 @@ package com.hearound.hearound;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.crashlytics.android.Crashlytics;
@@ -20,6 +25,9 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.mapbox.mapboxsdk.style.layers.CircleLayer;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 
 import io.fabric.sdk.android.Fabric;
 import org.json.JSONArray;
@@ -27,10 +35,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+
+import static com.mapbox.mapboxsdk.style.layers.Filter.all;
+import static com.mapbox.mapboxsdk.style.layers.Filter.gte;
+import static com.mapbox.mapboxsdk.style.layers.Filter.lt;
+import static com.mapbox.mapboxsdk.style.layers.Filter.neq;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.circleBlur;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.circleColor;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.circleRadius;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
     // Constants
@@ -51,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Fabric.with(this, new Crashlytics());
         Mapbox.getInstance(this, "pk.eyJ1IjoibXR1cnBpbiIsImEiOiJjajkzbnA3ZWkxY3YxMzNwNmFoYTB0eW9vIn0.95ukjEFdm3gG7lebBY4Eow");
         setContentView(R.layout.activity_main);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
 
@@ -78,14 +98,37 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         newPostFAB();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
 
     @Override
     public void onMapReady(MapboxMap mapboxMap) {
         MainActivity.this.mapboxMap = mapboxMap;
         mapboxMap.setMyLocationEnabled(true);
 
-        Location loc = mapboxMap.getMyLocation();
-        addNearbyPosts(loc.getLatitude(), loc.getLongitude(), 5);
+        // Location loc = mapboxMap.getMyLocation();
+        // addNearbyPosts(loc.getLatitude(), loc.getLongitude(), 5);
+        addClusteredGeoJsonSource(mapboxMap);
     }
 
     @Override
@@ -193,6 +236,65 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             mapboxMap.addMarker(new MarkerViewOptions().position(loc).title(user).snippet(body));
         } catch (Exception e) {
             Log.e("**** displayPost ****", "error adding marker: " + e);
+        }
+    }
+
+    // Copied from Mapbox demo app
+    // https://github.com/mapbox/mapbox-android-demo/blob/master/MapboxAndroidDemo/src/main/java/com/mapbox/mapboxandroiddemo/examples/dds/CreateHotspotsActivity.java
+    private void addClusteredGeoJsonSource(MapboxMap mapboxMap) {
+
+        // Add a new source from our GeoJSON data and set the 'cluster' option to true.
+        //try {
+            mapboxMap.addSource(
+                    // Point to GeoJSON data. This example visualizes all M1.0+ earthquakes from
+                    // 12/22/15 to 1/21/16 as logged by USGS' Earthquake hazards program.
+                    new GeoJsonSource("posts",
+                            "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"ature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-71.118,42.4064]},\"properties\":{\"prop0\":\"value0\"}},{\"type\":\"ature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-71.114007,42.404414]},\"properties\":{\"prop0\":\"value0\"}},{\"type\":\"ature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-71.115008,42.405413]},\"properties\":{\"prop0\":\"value0\"}},{\"type\":\"ature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-71.116007,42.406412]},\"properties\":{\"prop0\":\"value0\"}},{\"type\":\"ature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-71.117006,42.407413]},\"properties\":{\"prop0\":\"value0\"}},{\"type\":\"ature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-71.118008,42.408414]},\"properties\":{\"prop0\":\"value0\"}},{\"type\":\"ature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-71.119008,42.409412]},\"properties\":{\"prop0\":\"value0\"}},{\"type\":\"ature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-71.115006,42.403414]},\"properties\":{\"prop0\":\"value0\"}},{\"type\":\"ature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-71.114006,42.406412]},\"properties\":{\"prop0\":\"value0\"}}]}",
+                            //new URL("https://www.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson"),
+                            new GeoJsonOptions()
+                                    .withCluster(true)
+                                    .withClusterMaxZoom(15) // Max zoom to cluster points on
+                                    .withClusterRadius(20) // Use small cluster radius for the hotspots look
+                    )
+            );
+        //} catch (MalformedURLException malformedUrlException) {
+        //    Log.e("**** CreateHotspots", "Check the URL " + malformedUrlException.getMessage());
+        //}
+
+        // Use the earthquakes source to create four layers:
+        // three for each cluster category, and one for unclustered points
+
+        // Each point range gets a different fill color.
+        final int[][] layers = new int[][]{
+                new int[]{150, Color.parseColor("#E55E5E")},
+                new int[]{20, Color.parseColor("#F9886C")},
+                new int[]{0, Color.parseColor("#FBB03B")}
+        };
+
+        CircleLayer unclustered = new CircleLayer("unclustered-points", "posts");
+        unclustered.setProperties(
+                circleColor(Color.parseColor("#FBB03B")),
+                circleRadius(20f),
+                circleBlur(1f));
+        unclustered.setFilter(
+                neq("cluster", true)
+        );
+
+        mapboxMap.addLayerBelow(unclustered, "building");
+
+        for (int i = 0; i < layers.length; i++) {
+            CircleLayer circles = new CircleLayer("cluster-" + i, "posts");
+            circles.setProperties(
+                    circleColor(layers[i][1]),
+                    circleRadius(70f),
+                    circleBlur(1f)
+            );
+            circles.setFilter(
+                    i == 0
+                            ? gte("point_count", layers[i][0]) :
+                            all(gte("point_count", layers[i][0]), lt("point_count", layers[i - 1][0]))
+            );
+            mapboxMap.addLayerBelow(circles, "building");
         }
     }
 
