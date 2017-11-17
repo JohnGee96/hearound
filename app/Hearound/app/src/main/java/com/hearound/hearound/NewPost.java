@@ -1,8 +1,10 @@
 package com.hearound.hearound;
 
 import android.content.Intent;
+import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -27,15 +29,22 @@ public class NewPost extends AppCompatActivity {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     // TODO: set url
     private final String API_URL = "http://52.15.239.241/api";
+    private EditText titleView;
+    private EditText bodyView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_post);
+        titleView = (EditText) findViewById(R.id.title);
+        bodyView = (EditText) findViewById(R.id.postBody);
 
         Button submit = (Button) findViewById(R.id.submitButton);
         submit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+                if (!fieldsValid()) {
+                    return;
+                }
                 JSONObject json = getJSONBody();
                 if (json.length() == 0) {
                     return;
@@ -81,19 +90,47 @@ public class NewPost extends AppCompatActivity {
         });
     }
 
-    JSONObject getJSONBody() {
+    private boolean fieldsValid() {
+        // Reset errors.
+        titleView.setError(null);
+        bodyView.setError(null);
+
+        String title = titleView.getText().toString();
+        String body = bodyView.getText().toString();
+
+        boolean valid = true;
+        View focusView = null;
+
+        if (TextUtils.isEmpty(title)) {
+            titleView.setError(getString(R.string.error_field_required));
+            focusView = titleView;
+            valid = false;
+        }
+        if (TextUtils.isEmpty(body)) {
+            bodyView.setError(getString(R.string.error_field_required));
+            focusView = bodyView;
+            valid = false;
+        }
+
+        if (!valid) {
+            focusView.requestFocus();
+        }
+
+        return valid;
+    }
+
+    private JSONObject getJSONBody() {
         JSONObject json = new JSONObject();
 
-        EditText titleField = (EditText)findViewById(R.id.title);
-        EditText postField = (EditText)findViewById(R.id.postBody);
-        EditText latField = (EditText)findViewById(R.id.latitude);
-        EditText lngField = (EditText)findViewById(R.id.longitude);
+        Intent intent = getIntent();
+        double lat = intent.getDoubleExtra("lat", 0);
+        double lng = intent.getDoubleExtra("lng", 0);
 
         try {
-            json.put("title", titleField.getText().toString());
-            json.put("body", postField.getText().toString());
-            json.put("lat", latField.getText().toString());
-            json.put("lng", lngField.getText().toString());
+            json.put("title", titleView.getText().toString());
+            json.put("body", bodyView.getText().toString());
+            json.put("lat", lat);
+            json.put("lng", lng);
         } catch (Exception e) {
             // TODO: add user dialogue
             Log.e("**** getJSONBody ****", "empty text box: " + e);

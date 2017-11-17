@@ -111,7 +111,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
+                Location loc = mapboxMap.getMyLocation();
                 Intent intent = new Intent(this, SettingsActivity.class);
+                intent.putExtra("lat", loc.getLatitude());
+                intent.putExtra("lng", loc.getLongitude());
                 startActivity(intent);
                 return true;
 
@@ -125,17 +128,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onMapReady(MapboxMap mapboxMap) {
-        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         MainActivity.this.mapboxMap = mapboxMap;
         mapboxMap.setMyLocationEnabled(true);
 
-        if (true) { //prefs.getBoolean("enable_heatmap", false)) {
+        if (prefs.getBoolean("enable_heatmap", false)) {
             addClusteredGeoJsonSource(mapboxMap);
 
         }
         else {
             Location loc = mapboxMap.getMyLocation();
-            addNearbyPosts(loc.getLatitude(), loc.getLongitude(), 5);//prefs.getInt("radius", 5));
+            addNearbyPosts(loc.getLatitude(), loc.getLongitude(), Integer.parseInt(prefs.getString("radius", "5")));
         }
     }
 
@@ -257,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     // Point to GeoJSON data. This example visualizes all M1.0+ earthquakes from
                     // 12/22/15 to 1/21/16 as logged by USGS' Earthquake hazards program.
                     new GeoJsonSource("posts",
-                            new URL(API_URL + "/"),
+                            new URL(API_URL + "/nearby_post_locations"),
                             new GeoJsonOptions()
                                     .withCluster(true)
                                     .withClusterMaxZoom(15) // Max zoom to cluster points on

@@ -43,42 +43,7 @@
         android:ems="10"
         android:inputType="textMultiLine" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="113dp"
-        android:layout_height="30dp"
-        android:text="Location"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Lat: "
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
-    <EditText
-        android:id="@+id/latitude"
-        android:hint="Latitude"
-        android:layout_width="165dp"
-        android:layout_height="45dp"
-        android:ems="10"
-        android:inputType="numberSigned|numberDecimal" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Long: "
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
-    <EditText
-        android:id="@+id/longitude"
-        android:hint="Longitude"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="numberSigned|numberDecimal" />
     <LinearLayout
         style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
