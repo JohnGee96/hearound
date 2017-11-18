@@ -9,27 +9,11 @@ db = SQLAlchemy(app)
 
 from models import *
 from nearbyPost import *
+from authenticate import *
 
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
-
-# Expects a JSON with current geolocation and radius in km
-# {
-#   lat: 51.503364
-#   lng:  -0.127625
-#   radius: 5
-# }
-@app.route('/api/nearby_posts', methods=['POST'])
-def find_nearby_posts():
-    if not request.json:
-        abort(400)
-    if all (key in request.json for key in ("lat","lng","radius")):
-        result = findNearbyPosts(request.json)
-    else:
-        abort(400)
-    return jsonify([p.serialize for p in result])
-
 
 @app.route('/post/<id>')
 def show_post(id):
@@ -44,9 +28,9 @@ def init_db():
 
 manager = flask_restless.APIManager(app, flask_sqlalchemy_db=db)
 manager.create_api(Post, methods=['GET','POST', 'PUT'])
-manager.create_api(User, methods=['GET','POST'])
+manager.create_api(User, methods=['POST'])
 
 if __name__ == '__main__':
-    app.init_db()
+    init_db()
     app.run(host='localhost', port=80)
     # app.run(host='0.0.0.0', port=80)
