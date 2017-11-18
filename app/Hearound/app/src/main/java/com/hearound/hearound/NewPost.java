@@ -61,7 +61,6 @@ public class NewPost extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Log.e("**** post ****", error);
                                 }
                             });
                         }
@@ -73,7 +72,6 @@ public class NewPost extends AppCompatActivity {
                         }
                     });
                 } catch (Exception e) {
-                    Log.e("**** onClick ****", "error with POST: " + e);
                 }
 
                 Intent intent = new Intent(view.getContext(), MainActivity.class);
@@ -133,11 +131,7 @@ public class NewPost extends AppCompatActivity {
             json.put("body", bodyView.getText().toString());
             json.put("lat", lat);
             json.put("lng", lng);
-            Log.d("**** getJSONBody ****", lat + "");
-            Log.d("**** getJSONBody ****", lng + "");
         } catch (Exception e) {
-            // TODO: add user dialogue
-            Log.e("**** getJSONBody ****", "empty text box: " + e);
         }
 
         return json;
