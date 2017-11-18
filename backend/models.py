@@ -12,7 +12,8 @@ class Post(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     # geolocation = db.relationship(Geolocation, backref=db.backref('geolocations'))
-    title = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer,db.ForeignKey('users.id'))
+    user = db.relationship('User', backref='post', lazy=True)
     body = db.Column(db.String(500), nullable=False)
     lat = db.Column(db.Float(9), nullable=False)
     lng = db.Column(db.Float(9), nullable=False)
@@ -42,3 +43,8 @@ class User(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(),
                            onupdate=func.now())
+    
+    def getUsername(self):
+        return self.username
+    def getEmail(self):
+        return self.email
