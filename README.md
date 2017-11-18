@@ -103,14 +103,97 @@ Retrieve posts within a fixed radius around a geolocation. Must provide a POST r
 JSON format:
 
     {
-        "lat": 0.000000
-        "lng": 0.000000
+        "lat": 42.408226
+        "lng": -71.115944
         "radius": 5  #in kilometer
     }
 
 Example request:
 
-    curl -H "Content-Type: application/json" -X POST -d '{ "lat": 0.000000, "lng": 0.000000, "radius": 5}' http://<Server_IP>/api/nearby_posts
+    curl -H "Content-Type: application/json" -X POST -d '{ "lat": 42.408226, "lng": -71.115944, "radius": 5}' http://<Server_IP>/api/nearby_posts
+
+Example Response:
+
+    [
+        {
+            "body": "This is the geolocation of Hillside", 
+            "id": 5, 
+            "lat": 42.4088871, 
+            "lng": -71.1196583, 
+            "modified_at": [
+            "2017-10-31", 
+            "00:47:00"
+            ], 
+            "title": "Hillside Apartments", 
+            "updated_at": [
+            "2017-10-31", 
+            "00:47:00"
+            ]
+        }, 
+        {
+            "body": "This is the geolocation of Halligan", 
+            "id": 6, 
+            "lat": 42.408226, 
+            "lng": -71.115944, 
+            "modified_at": [
+            "2017-10-31", 
+            "01:08:39"
+            ], 
+            "title": "Halligan Hall", 
+            "updated_at": [
+            "2017-10-31", 
+            "01:08:39"
+            ]
+        }
+    ]
+
+### POST /api/nearby_post_locations
+Retrieve the coordinates of nearby posts in a json format Must provide a POST request with the following
+JSON format:
+
+    {
+        "lat": 42.408226
+        "lng": -71.115944
+        "radius": 5  #in kilometer
+    }
+
+Example request:
+
+    curl -H "Content-Type: application/json" -X POST -d '{ "lat": 42.408226, "lng": -71.115944, "radius": 5}' http://<Server_IP>/api/nearby_post_locations
+
+Example Response:
+
+    {
+        "features": [
+            {
+            "geometry": {
+                "coordinates": [
+                -71.1196583, 
+                42.4088871
+                ], 
+                "type": "Point"
+            }, 
+            "properties": {
+                "author": "John Smith"
+            }, 
+            "type": "Feature"
+            }, 
+            {
+            "geometry": {
+                "coordinates": [
+                -71.115944, 
+                42.408226
+                ], 
+                "type": "Point"
+            }, 
+            "properties": {
+                "author": "John Smith"
+            }, 
+            "type": "Feature"
+            }
+        ], 
+        "type": "FeatureCollection"
+    }
 
 
 ### POST /api/posts
@@ -119,13 +202,13 @@ Create a new post by providing a POST request with following JSON format:
     {
         "title": "Sample Post",
         "body": "This the body of a sample post", 
-        "lat": 0.000000
-        "lng": 0.000000
+        "lat": 42.408226
+        "lng": -71.115944
     }
 
 Example request:
 
-    curl -H "Content-Type: application/json" -X POST -d '{"title":"Sample Post", "body": "This the body of a sample post", "lat":0.000000, "lng": 0.000000}' http://<Server_IP>/api/posts
+    curl -H "Content-Type: application/json" -X POST -d '{"title":"Sample Post", "body": "This the body of a sample post", "lat": 42.408226, "lng": -71.115944}' http://<Server_IP>/api/posts
 
 ### PUT /api/posts/#
 Update the Post with id #. Provide the PUT request with the following JSON:
@@ -133,6 +216,12 @@ Update the Post with id #. Provide the PUT request with the following JSON:
     {
         "title": "Sample Post",
         "body": "This will replace the body of the original Sample Post", 
-        "lat": 0.000000
-        "lng": 0.000000
+        "lat": 42.408226
+        "lng": -71.115944
     }
+
+
+Example request:
+
+    curl -H "Content-Type: application/json" -X PUT -d '{"title":"Sample Post", "body": "This will replace the body of the original Sample Post", "lat": 42.408226, "lng": -71.115944}' http://<Server_IP>/api/posts/1
+

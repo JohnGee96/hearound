@@ -151,8 +151,8 @@ Example Response:
             {
             "geometry": {
                 "coordinates": [
-                42.4088871, 
-                -71.1196583
+                -71.1196583, 
+                42.4088871
                 ], 
                 "type": "Point"
             }, 
@@ -164,8 +164,8 @@ Example Response:
             {
             "geometry": {
                 "coordinates": [
-                42.408226, 
-                -71.115944
+                -71.115944, 
+                42.408226
                 ], 
                 "type": "Point"
             }, 
