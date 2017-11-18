@@ -1,6 +1,7 @@
 package com.hearound.hearound;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -127,17 +128,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         MainActivity.this.mapboxMap = mapboxMap;
         mapboxMap.setMyLocationEnabled(true);
-        Location loc = mapboxMap.getMyLocation();
-        double lat = loc.getLatitude();
-        double lng = loc.getLongitude();
-        int radius = Integer.parseInt(prefs.getString("radius", "5"));
+        try {
+            Location loc = mapboxMap.getMyLocation();
+            double lat = loc.getLatitude();
+            double lng = loc.getLongitude();
+            int radius = Integer.parseInt(prefs.getString("radius", "5"));
 
-        if (prefs.getBoolean("show_heatmap", false)) {
-            addHeatmapLayer(mapboxMap, lat, lng, radius);
+            if (prefs.getBoolean("show_heatmap", false)) {
+                addHeatmapLayer(mapboxMap, lat, lng, radius);
 
-        }
-        else {
-            addNearbyPosts(lat, lng, radius);
+            } else {
+                addNearbyPosts(lat, lng, radius);
+            }
+        } catch (Exception e){
+
         }
     }
 
@@ -165,6 +169,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         FAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions((Activity) v.getContext(),
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            MY_PERMISSIONS_ACCESS_FINE_LOCATION);
+                }
+
                 if(mapboxMap != null && mapboxMap.getMyLocation() != null) {
                     mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mapboxMap.getMyLocation()), 15));
                 }
@@ -177,11 +187,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         compose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), NewPost.class);
-                Location loc = mapboxMap.getMyLocation();
-                intent.putExtra("lat", loc.getLatitude());
-                intent.putExtra("lng", loc.getLongitude());
-                startActivity(intent);
+                if (ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions((Activity) v.getContext(),
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            MY_PERMISSIONS_ACCESS_FINE_LOCATION);
+                }
+                try {
+                    Intent intent = new Intent(v.getContext(), NewPost.class);
+                    Location loc = mapboxMap.getMyLocation();
+                    intent.putExtra("lat", loc.getLatitude());
+                    intent.putExtra("lng", loc.getLongitude());
+                    startActivity(intent);
+                } catch (Exception e) {
+                }
             }
         });
     }
