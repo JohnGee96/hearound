@@ -28,7 +28,7 @@ public class NewPost extends AppCompatActivity {
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     // TODO: set url
-    private final String API_URL = "http://52.15.239.241/api";
+    private String API_URL;
     private EditText titleView;
     private EditText bodyView;
 
@@ -36,6 +36,7 @@ public class NewPost extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_post);
+        API_URL = getString(R.string.api_url);
         titleView = (EditText) findViewById(R.id.title);
         bodyView = (EditText) findViewById(R.id.postBody);
 

@@ -17,8 +17,6 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".MainActivity" />
-        <activity android:name=".NewPost" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
@@ -33,10 +31,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".SignUpActivity"/>
+        <activity android:name=".MainActivity" />
+        <activity android:name=".NewPost" />
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".SignUpActivity"></activity>
     </application>
 
 </manifest>

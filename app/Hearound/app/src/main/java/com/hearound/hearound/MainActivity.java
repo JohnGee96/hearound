@@ -56,8 +56,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     // Constants
     private final int DEFAULT_GPS_MIN_TIME = 1; // in milliseconds
     private final int DEFAULT_GPS_MIN_DISTANCE = 1; // in meters
-    // TODO: set url
-    private final String API_URL = "http://52.15.170.154/api";
+    private String API_URL;
 
     private static final int MY_PERMISSIONS_ACCESS_FINE_LOCATION = 0;
     private MapView mapView;
@@ -75,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setSupportActionBar(myToolbar);
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
+        API_URL = getString(R.string.api_url);
 
         // Set up location detection
         locManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
