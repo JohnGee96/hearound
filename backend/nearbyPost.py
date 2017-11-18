@@ -38,7 +38,7 @@ def createGeoJson(posts):
     featureArray = []
     for post in posts:
         post_feature = {
-            "type": "post",
+            "type": "Feature",
             "geometry": {
                 "type": "Point",
                 "coordinates": ''
@@ -47,7 +47,7 @@ def createGeoJson(posts):
                 "author": ''
             }
         }
-        post_feature["geometry"]["coordinates"] = [post.lat, post.lng]
+        post_feature["geometry"]["coordinates"] = [post.lng,post.lat]
         post_feature["properties"]["author"] = "John Smith"
         featureArray.append(post_feature)
     return {
