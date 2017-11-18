@@ -13,7 +13,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -111,10 +110,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                Location loc = mapboxMap.getMyLocation();
                 Intent intent = new Intent(this, SettingsActivity.class);
-                intent.putExtra("lat", loc.getLatitude());
-                intent.putExtra("lng", loc.getLongitude());
                 startActivity(intent);
                 return true;
 
@@ -131,14 +127,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         MainActivity.this.mapboxMap = mapboxMap;
         mapboxMap.setMyLocationEnabled(true);
+        Location loc = mapboxMap.getMyLocation();
+        double lat = loc.getLatitude();
+        double lng = loc.getLongitude();
+        int radius = Integer.parseInt(prefs.getString("radius", "5"));
 
-        if (prefs.getBoolean("enable_heatmap", false)) {
-            addClusteredGeoJsonSource(mapboxMap);
+        if (prefs.getBoolean("show_heatmap", false)) {
+            addHeatmapLayer(mapboxMap, lat, lng, radius);
 
         }
         else {
-            Location loc = mapboxMap.getMyLocation();
-            addNearbyPosts(loc.getLatitude(), loc.getLongitude(), Integer.parseInt(prefs.getString("radius", "5")));
+            addNearbyPosts(lat, lng, radius);
         }
     }
 
@@ -155,7 +154,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         DEFAULT_GPS_MIN_DISTANCE,
                         locListener);
             } catch (SecurityException e) {
-                Log.e("**** onPermissions ****","request location failed: " + e);
             }
             mapboxMap.setMyLocationEnabled(true);
         }
@@ -170,9 +168,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if(mapboxMap != null && mapboxMap.getMyLocation() != null) {
                     mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mapboxMap.getMyLocation()), 15));
                 }
-                else {
-                    Log.d("**** FAB ****", "map: " + mapboxMap);
-                }
             }
         });
     }
@@ -183,6 +178,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), NewPost.class);
+                Location loc = mapboxMap.getMyLocation();
+                intent.putExtra("lat", loc.getLatitude());
+                intent.putExtra("lng", loc.getLongitude());
                 startActivity(intent);
             }
         });
@@ -205,9 +203,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Log.e("**** post ****", error);
-                    }
-                });
+                        }
+                    });
                 }
 
                 @Override
@@ -216,12 +213,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     parseResponse(res);
                 }
             });
-        } catch (IOException e1) {
-            Log.e("**** addNearbyPosts ***", "Error with POST: " + e1);
-        } catch (JSONException e2) {
-            Log.e("**** addNearbyPosts ***", "Error making JSON" + e2);
         } catch (Exception e) {
-            Log.e("**** addNearbyPosts ***", e.toString());
         }
     }
 
@@ -236,7 +228,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 displayPost(loc, postData.getString("title"), postData.getString("body"));
             }
         } catch (Exception e) {
-            Log.e("**** parseResponse ****", "error parsing response data: " + e);
         }
 
     }
@@ -246,32 +237,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         try {
             mapboxMap.addMarker(new MarkerViewOptions().position(loc).title(user).snippet(body));
         } catch (Exception e) {
-            Log.e("**** displayPost ****", "error adding marker: " + e);
         }
     }
 
     // Copied from Mapbox demo app
     // https://github.com/mapbox/mapbox-android-demo/blob/master/MapboxAndroidDemo/src/main/java/com/mapbox/mapboxandroiddemo/examples/dds/CreateHotspotsActivity.java
-    private void addClusteredGeoJsonSource(MapboxMap mapboxMap) {
+    private void addClusteredGeoJsonSource(MapboxMap mapboxMap, String nearbyPostLocations) {
 
         // Add a new source from our GeoJSON data and set the 'cluster' option to true.
-        try {
-            mapboxMap.addSource(
-                    // Point to GeoJSON data. This example visualizes all M1.0+ earthquakes from
-                    // 12/22/15 to 1/21/16 as logged by USGS' Earthquake hazards program.
-                    new GeoJsonSource("posts",
-                            new URL(API_URL + "/nearby_post_locations"),
-                            new GeoJsonOptions()
-                                    .withCluster(true)
-                                    .withClusterMaxZoom(15) // Max zoom to cluster points on
-                                    .withClusterRadius(20) // Use small cluster radius for the hotspots look
-                    )
-            );
-        } catch (MalformedURLException malformedUrlException) {
-            Log.e("**** CreateHotspots", "Check the URL " + malformedUrlException.getMessage());
-        }
+        mapboxMap.addSource(
+                new GeoJsonSource("posts",
+                        nearbyPostLocations,
+                        new GeoJsonOptions()
+                                .withCluster(true)
+                                .withClusterMaxZoom(15) // Max zoom to cluster points on
+                                .withClusterRadius(20) // Use small cluster radius for the hotspots look
+                )
+        );
 
-        // Use the earthquakes source to create four layers:
+        // Create four layers:
         // three for each cluster category, and one for unclustered points
 
         // Each point range gets a different fill color.
@@ -305,6 +289,42 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             all(gte("point_count", layers[i][0]), lt("point_count", layers[i - 1][0]))
             );
             mapboxMap.addLayerBelow(circles, "building");
+        }
+    }
+
+    private void addHeatmapLayer(final MapboxMap mapboxMap, double lat, double lng, int radius) {
+        APIConnection api = new APIConnection();
+
+        try {
+            JSONObject params = new JSONObject();
+            Location loc = mapboxMap.getMyLocation();
+            params.put("lat", lat);
+            params.put("lng", lng);
+            params.put("radius", radius);
+
+            api.post(API_URL + "/nearby_post_locations", params, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String res = response.body().string();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            addClusteredGeoJsonSource(mapboxMap, res);
+                        }
+                    });
+                }
+            });
+        } catch (Exception e) {
         }
     }
 

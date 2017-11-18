@@ -102,14 +102,15 @@ public class NewPost extends AppCompatActivity {
         boolean valid = true;
         View focusView = null;
 
-        if (TextUtils.isEmpty(title)) {
-            titleView.setError(getString(R.string.error_field_required));
-            focusView = titleView;
-            valid = false;
-        }
         if (TextUtils.isEmpty(body)) {
             bodyView.setError(getString(R.string.error_field_required));
             focusView = bodyView;
+            valid = false;
+        }
+
+        if (TextUtils.isEmpty(title)) {
+            titleView.setError(getString(R.string.error_field_required));
+            focusView = titleView;
             valid = false;
         }
 
@@ -132,6 +133,8 @@ public class NewPost extends AppCompatActivity {
             json.put("body", bodyView.getText().toString());
             json.put("lat", lat);
             json.put("lng", lng);
+            Log.d("**** getJSONBody ****", lat + "");
+            Log.d("**** getJSONBody ****", lng + "");
         } catch (Exception e) {
             // TODO: add user dialogue
             Log.e("**** getJSONBody ****", "empty text box: " + e);

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Hearound</string>
     <string name="title_activity_login">Sign in</string>
-    <string name="api_url">http://52.15.239.241/api</string>
+    <string name="api_url">http://18.217.14.227/api</string>
 
     <!-- Strings related to login or signup -->
     <string name="prompt_username">Username</string>

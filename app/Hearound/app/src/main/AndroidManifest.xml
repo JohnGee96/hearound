@@ -22,17 +22,12 @@
             android:name="io.fabric.ApiKey"
             android:value="61b80d0affaf9ceb2e89db164b9d4148d0bc1005" />
 
-        <activity
-            android:name=".LoginActivity"
-            android:label="@string/title_activity_login">
+        <activity android:name=".MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".SignUpActivity"/>
-        <activity android:name=".MainActivity" />
+            </intent-filter></activity>
         <activity android:name=".NewPost" />
         <activity
             android:name=".SettingsActivity"
