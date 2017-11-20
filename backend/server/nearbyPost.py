@@ -1,7 +1,7 @@
 from flask import Flask, abort, request, jsonify
 from math import radians, cos, sin, asin, sqrt
-from models import Post
-from app import app
+from server.models import Post
+from server import app
 import json
 
 def haversine(lat1,lng1, lat2, lng2):

@@ -1,8 +1,6 @@
 from flask import Flask, abort, request
-from flask_sqlalchemy import SQLAlchemy
-from models import *
-
-from app import app
+from server.models import User, db
+from server import app
 
 @app.route('/signup', methods=['POST'])
 def signup():

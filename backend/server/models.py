@@ -1,7 +1,11 @@
+# Defines all models for database
+
 from sqlalchemy.sql import func
-from app import db
+from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
+# create db object
+db = SQLAlchemy()
 
 def dump_datetime(value):
     """Deserialize datetime object into string form for JSON processing."""
@@ -22,7 +26,6 @@ class Post(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(),
                            onupdate=func.now())
-    
     
     def getAuthor(self):
         if self.user is not None:
