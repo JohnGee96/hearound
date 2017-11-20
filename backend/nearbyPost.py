@@ -48,7 +48,7 @@ def createGeoJson(posts):
             }
         }
         post_feature["geometry"]["coordinates"] = [post.lng,post.lat]
-        post_feature["properties"]["author"] = "John Smith"
+        post_feature["properties"]["author"] = post.getAuthor()
         featureArray.append(post_feature)
     return {
         "type": "FeatureCollection",

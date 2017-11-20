@@ -7,9 +7,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./db/sqlite.db'
 db = SQLAlchemy(app)
 
-from models import *
-from nearbyPost import *
+from models import User, Post
 from authenticate import *
+from nearbyPost import *
 
 @app.route('/')
 def hello_world():
@@ -27,8 +27,9 @@ def init_db():
     db.create_all()
 
 manager = flask_restless.APIManager(app, flask_sqlalchemy_db=db)
-manager.create_api(Post, methods=['GET','POST', 'PUT'])
-manager.create_api(User, methods=['POST'])
+post_cols = ['id','user','user.username', 'user.id','body','lat','lng']
+manager.create_api(Post, methods=['GET','POST', 'PUT'], include_columns=post_cols)
+
 
 if __name__ == '__main__':
     init_db()

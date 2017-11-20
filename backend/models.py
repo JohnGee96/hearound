@@ -1,5 +1,7 @@
 from sqlalchemy.sql import func
 from app import db
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 def dump_datetime(value):
     """Deserialize datetime object into string form for JSON processing."""
@@ -13,26 +15,33 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     # geolocation = db.relationship(Geolocation, backref=db.backref('geolocations'))
     user_id = db.Column(db.Integer,db.ForeignKey('users.id'))
-    user = db.relationship('User', backref='post', lazy=True)
+    user = db.relationship('User', backref='post')
     body = db.Column(db.String(500), nullable=False)
     lat = db.Column(db.Float(9), nullable=False)
     lng = db.Column(db.Float(9), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(),
                            onupdate=func.now())
+    
+    
+    def getAuthor(self):
+        if self.user is not None:
+            return self.user.username
+        else:
+            return None
 
     @property
     def serialize(self):
         return {
             'id'         : self.id,
-            'title'      : self.title,
+            'author'     : self.getAuthor(),
             'body'       : self.body,
             'lat'        : self.lat,
             'lng'        : self.lng,
             'modified_at': dump_datetime(self.created_at),
             'updated_at' : dump_datetime(self.updated_at)
         }
-
+    
 class User(db.Model):
     __tablename__ = "users"
 
@@ -43,7 +52,15 @@ class User(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(),
                            onupdate=func.now())
-    
+   
+    def __init__(self, username, email, password):
+        self.username = username
+        self.email = email
+        self.setPassword(password)
+    def setPassword(self,password):
+        self.password = generate_password_hash(password)
+    def checkPassword(self, password):
+        return check_password_hash(self.password, password)
     def getUsername(self):
         return self.username
     def getEmail(self):
