@@ -1,14 +1,28 @@
 package com.hearound.hearound;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
 public class SignUpActivity extends AppCompatActivity {
+    private String API_URL;
     private EditText usernameView;
     private EditText emailView;
     private EditText passwordView;
@@ -18,6 +32,7 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+        API_URL = getString(R.string.api_url);
 
         usernameView = (EditText) findViewById(R.id.username);
         emailView = (EditText) findViewById(R.id.email);
@@ -93,9 +108,7 @@ public class SignUpActivity extends AppCompatActivity {
         if (cancel) {
             focusView.requestFocus();
         } else {
-            // TODO: send sign up post request to server
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+            createUser(email, username, password);
         }
     }
 
@@ -105,5 +118,62 @@ public class SignUpActivity extends AppCompatActivity {
 
     private boolean isPasswordValid(String password) {
         return password.length() > 4;
+    }
+
+    private void createUser(String email, String username, String password) {
+        APIConnection api = new APIConnection();
+
+        try {
+            JSONObject params = new JSONObject();
+            params.put("email", email);
+            params.put("username", username);
+            params.put("password", password);
+
+            api.post(API_URL + "/signup", params, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    final String error = e.toString();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.e("**** post ****", error);
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (response.code() == 200) {
+                        setUserInfo(response.body().string());
+                    }
+                }
+            });
+        } catch (IOException e1) {
+            Log.e("**** createUser ***", "Error with POST: " + e1);
+        } catch (JSONException e2) {
+            Log.e("**** createUser ***", "Error making JSON" + e2);
+        } catch (Exception e) {
+            Log.e("**** createUser ***", e.toString());
+        }
+    }
+
+    private void setUserInfo(String data) {
+        try {
+            JSONObject userData = new JSONObject(data);
+
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("username", userData.getString("username"));
+            editor.putString("email", userData.getString("email"));
+            editor.putInt("user_id", userData.getInt("user_id"));
+            editor.apply();
+
+        } catch (Exception e) {
+            Log.e("**** setUserInfo ****", "error parsing response data: " + e);
+        }
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }

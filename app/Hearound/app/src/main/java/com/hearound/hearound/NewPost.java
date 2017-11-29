@@ -1,7 +1,9 @@
 package com.hearound.hearound;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -27,9 +29,7 @@ import okhttp3.Response;
 public class NewPost extends AppCompatActivity {
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    // TODO: set url
     private String API_URL;
-    private EditText titleView;
     private EditText bodyView;
 
     @Override
@@ -37,7 +37,6 @@ public class NewPost extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_post);
         API_URL = getString(R.string.api_url);
-        titleView = (EditText) findViewById(R.id.title);
         bodyView = (EditText) findViewById(R.id.postBody);
 
         Button submit = (Button) findViewById(R.id.submitButton);
@@ -72,12 +71,12 @@ public class NewPost extends AppCompatActivity {
                             return;
                         }
                     });
+
+                    Intent intent = new Intent(view.getContext(), MainActivity.class);
+                    startActivity(intent);
                 } catch (Exception e) {
                     Log.e("**** onClick ****", "error with POST: " + e);
                 }
-
-                Intent intent = new Intent(view.getContext(), MainActivity.class);
-                startActivity(intent);
             }
 
         });
@@ -93,20 +92,13 @@ public class NewPost extends AppCompatActivity {
 
     private boolean fieldsValid() {
         // Reset errors.
-        titleView.setError(null);
         bodyView.setError(null);
 
-        String title = titleView.getText().toString();
         String body = bodyView.getText().toString();
 
         boolean valid = true;
         View focusView = null;
 
-        if (TextUtils.isEmpty(title)) {
-            titleView.setError(getString(R.string.error_field_required));
-            focusView = titleView;
-            valid = false;
-        }
         if (TextUtils.isEmpty(body)) {
             bodyView.setError(getString(R.string.error_field_required));
             focusView = bodyView;
@@ -128,10 +120,14 @@ public class NewPost extends AppCompatActivity {
         double lng = intent.getDoubleExtra("lng", 0);
 
         try {
-            json.put("title", titleView.getText().toString());
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+            json.put("user_id", prefs.getInt("user_id", -1));
             json.put("body", bodyView.getText().toString());
             json.put("lat", lat);
             json.put("lng", lng);
+
+            System.out.println("*************" + json);
         } catch (Exception e) {
             // TODO: add user dialogue
             Log.e("**** getJSONBody ****", "empty text box: " + e);

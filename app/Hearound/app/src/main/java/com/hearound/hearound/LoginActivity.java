@@ -1,10 +1,13 @@
 package com.hearound.hearound;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,20 +17,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
 /**
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity {
-
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
-
-    // UI references.
+    private String API_URL;
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
 
@@ -35,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        API_URL = getString(R.string.api_url);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
 
@@ -112,20 +116,72 @@ public class LoginActivity extends AppCompatActivity {
             // form field with an error.
             focusView.requestFocus();
         } else {
-            // TODO: send login post request to server
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+            loginUser(email, password);
         }
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
         return email.contains("@");
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
         return password.length() > 4;
+    }
+
+    private void loginUser(String email, String password) {
+        APIConnection api = new APIConnection();
+
+        try {
+            JSONObject params = new JSONObject();
+            params.put("email", email);
+            params.put("password", password);
+
+            api.post(API_URL + "/login", params, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    final String error = e.toString();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.e("**** post ****", error);
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (response.code() == 200) {
+                        setUserInfo(response.body().string());
+                    }
+                }
+            });
+        } catch (IOException e1) {
+            Log.e("**** loginUser ***", "Error with POST: " + e1);
+        } catch (JSONException e2) {
+            Log.e("**** loginUser ***", "Error making JSON" + e2);
+        } catch (Exception e) {
+            Log.e("**** loginUser ***", e.toString());
+        }
+    }
+
+    private void setUserInfo(String data) {
+        try {
+            JSONObject userData = new JSONObject(data);
+
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("username", userData.getString("username"));
+            editor.putString("email", userData.getString("email"));
+            editor.putInt("user_id", userData.getInt("user_id"));
+            editor.apply();
+
+        } catch (Exception e) {
+            Log.e("**** setUserInfo ****", "error parsing response data: " + e);
+        }
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }
 
