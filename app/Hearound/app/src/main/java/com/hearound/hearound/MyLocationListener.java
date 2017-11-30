@@ -25,12 +25,10 @@ public class MyLocationListener implements LocationListener
 
     public MyLocationListener(MainActivity f) {
         copyOfMainActivity = f;
-        Log.v("*** Listener ***", "Init");
     }
 
     @Override
     public void onLocationChanged(Location arg0) {
-        Log.v("*** Listener ***", "Location changed!");
         double latitude = arg0.getLatitude();
         double longitude = arg0.getLongitude();
         String newDispLabel = "";

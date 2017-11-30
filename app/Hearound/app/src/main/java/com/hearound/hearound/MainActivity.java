@@ -69,8 +69,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Fabric.with(this, new Crashlytics());
         Mapbox.getInstance(this, "pk.eyJ1IjoibXR1cnBpbiIsImEiOiJjajkzbnA3ZWkxY3YxMzNwNmFoYTB0eW9vIn0.95ukjEFdm3gG7lebBY4Eow");
         setContentView(R.layout.activity_main);
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         API_URL = getString(R.string.api_url);
@@ -110,10 +108,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                Location loc = mapboxMap.getMyLocation();
+                saveCurrentLocation();
+
                 Intent intent = new Intent(this, SettingsActivity.class);
-                intent.putExtra("lat", loc.getLatitude());
-                intent.putExtra("lng", loc.getLongitude());
                 startActivity(intent);
                 return true;
 
@@ -131,6 +128,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         MainActivity.this.mapboxMap = mapboxMap;
         mapboxMap.setMyLocationEnabled(true);
 
+        double currentLat = Double.longBitsToDouble(prefs.getLong("currentLat", Double.doubleToLongBits(42.407104)));
+        double currentLng = Double.longBitsToDouble(prefs.getLong("currentLng", Double.doubleToLongBits(-71.119924)));
+        LatLng currentLoc = new LatLng(currentLat, currentLng);
+        int zoom = prefs.getInt("zoom", 15);
+
+        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, zoom));
+
         try {
             Location loc = mapboxMap.getMyLocation();
             double lat = loc.getLatitude();
@@ -144,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 addNearbyPosts(lat, lng, radius);
             }
         } catch (Exception e){
-
+            Log.e("**** onMapReady ****", "error adding posts: " + e);
         }
     }
 
@@ -200,6 +204,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
 
                 try {
+                    saveCurrentLocation();
+
                     Intent intent = new Intent(v.getContext(), NewPost.class);
                     Location loc = mapboxMap.getMyLocation();
                     intent.putExtra("lat", loc.getLatitude());
@@ -209,6 +215,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         });
+    }
+
+    private void saveCurrentLocation() {
+        int zoom = (int) mapboxMap.getCameraPosition().zoom;
+        LatLng currentLoc = mapboxMap.getCameraPosition().target;
+        double currentLat = currentLoc.getLatitude();
+        double currentLng = currentLoc.getLongitude();
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt("zoom", zoom);
+        editor.putLong("currentLat", Double.doubleToRawLongBits(currentLat));
+        editor.putLong("currentLng", Double.doubleToRawLongBits(currentLng));
+        editor.apply();
     }
 
     private void addNearbyPosts(double lat, double lng, int radius) {
@@ -249,7 +269,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void parseResponse(String res) {
-        System.out.println(res);
         try {
             JSONArray allPosts = new JSONArray(res);
 
