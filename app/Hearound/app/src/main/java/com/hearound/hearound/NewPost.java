@@ -127,7 +127,6 @@ public class NewPost extends AppCompatActivity {
             json.put("lat", lat);
             json.put("lng", lng);
 
-            System.out.println("*************" + json);
         } catch (Exception e) {
             // TODO: add user dialogue
             Log.e("**** getJSONBody ****", "empty text box: " + e);
