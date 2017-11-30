@@ -212,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     intent.putExtra("lng", loc.getLongitude());
                     startActivity(intent);
                 } catch (Exception e) {
+                    Log.e("**** newPostFAB ****","request location failed: " + e);
                 }
             }
         });
@@ -376,6 +377,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             });
         } catch (Exception e) {
+            Log.e("**** addHeatmap ****","add heatmap failed: " + e);
         }
     }
 
