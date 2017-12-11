@@ -14,8 +14,10 @@
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_passwords_dont_match">The passwords must match</string>
     <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_invalid_login">The email or password is incorrect</string>
+    <string name="error_signup_failed">The signup failed. Please try again</string>
     <string name="error_field_required">This field is required</string>
+    <string name="server_error">The server is experiencing issues. Please try again later.</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>

@@ -1,8 +1,11 @@
 package com.hearound.hearound;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -145,6 +148,7 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             Log.e("**** post ****", error);
+                            createAlert(getString(R.string.server_error));
                         }
                     });
                 }
@@ -153,6 +157,8 @@ public class LoginActivity extends AppCompatActivity {
                 public void onResponse(Call call, Response response) throws IOException {
                     if (response.code() == 200) {
                         setUserInfo(response.body().string());
+                    } else {
+                        createAlert(getString(R.string.error_invalid_login));
                     }
                 }
             });
@@ -163,6 +169,18 @@ public class LoginActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("**** loginUser ***", e.toString());
         }
+    }
+
+    private void createAlert(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Error")
+                .setMessage(message)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // do nothing
+                    }
+                })
+                .show();
     }
 
     private void setUserInfo(String data) {
